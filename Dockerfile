@@ -11,7 +11,7 @@ RUN apt-get update && \
     pip install --upgrade pip && pip install certbot-route53 awscli && \
     apt-get purge python-pip software-properties-common -y  && apt-get autoremove -y && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-COPY docker-entrypoint.sh /
+COPY docker-entrypoint.sh /usr/local/bin/
 
 VOLUME /etc/letsencrypt/archive/
 

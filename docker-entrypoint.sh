@@ -22,15 +22,21 @@ file_env 'AWS_ACCESS_KEY'
 file_env 'AWS_SECRET_KEY'
 
 # Setup Default AWS Configure
-aws configure set aws_access_key_id $AWS_ACCESS_KEY
-aws configure set aws_access_key_id $AWS_SECRET_KEY
+aws configure set aws_access_key_id "$AWS_ACCESS_KEY"
+aws configure set aws_access_key_id "$AWS_SECRET_KEY"
 aws configure set default.region ap-northeast-2
 aws configure set output text
 
 file_env 'EMAIL'
 
 while (true); do
-  certbot certonly -n --agree-tos --email $EMAIL --dns-route53 -d $DNS_LIST
+  if !  certbot certonly -n --agree-tos --email "$EMAIL" --dns-route53 -d "$DNS_LIST"
+  then
+    echo "DNS Auth Failed" 
+    exit
+  fi
+  echo "DNS Auth Success"
+  echo "i will Sleep two month"
   #pause to 2 month
   sleep 5184000
 done
