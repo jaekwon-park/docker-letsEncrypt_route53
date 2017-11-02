@@ -1,6 +1,7 @@
 FROM ubuntu:16.04
 MAINTAINER jaekwon park <jaekwon.park@code-post.com>
 
+VOLUME /etc/letsencrypt/archive/
 
 # Configure apt
 RUN apt-get update && \
@@ -11,8 +12,7 @@ RUN apt-get update && \
     pip install --upgrade pip && pip install certbot-route53 awscli && \
     apt-get purge python-pip software-properties-common -y  && apt-get autoremove -y && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-COPY docker-entrypoint.sh /usr/local/bin/
+ADD docker-entrypoint.sh /
+RUN chmod +x /docker-entrypoint.sh
 
-VOLUME /etc/letsencrypt/archive/
-
-CMD ["docker-entrypoint.sh"]
+CMD ["/docker-entrypoint.sh"]
