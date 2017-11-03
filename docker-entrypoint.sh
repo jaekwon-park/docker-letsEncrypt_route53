@@ -30,7 +30,7 @@ aws configure set output text
 file_env 'EMAIL'
 
 while (true); do
-  if !  certbot certonly -n --agree-tos --email "$EMAIL" --dns-route53 -d "$DNS_LIST"
+  if !  certbot certonly -n --agree-tos --email "$EMAIL" --dns-route53 --expand -d "$DNS_LIST"
   then
     echo "DNS Auth Failed" 
     exit
