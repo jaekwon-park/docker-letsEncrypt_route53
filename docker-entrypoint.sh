@@ -29,7 +29,9 @@ aws configure set output text
 
 file_env 'EMAIL'
 
+
 while (true); do
+  rm -rf /etc/letsencrypt/archive/*
   if !  certbot certonly -n --agree-tos --email "$EMAIL" --dns-route53 --expand -d "$DNS_LIST"
   then
     echo "DNS Auth Failed" 
