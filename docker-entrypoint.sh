@@ -38,7 +38,7 @@ while (true); do
       exit
     fi
   else
-    if !  certbot renew -n --agree-tos --email "$EMAIL" --dns-route53 --expand -d "$DNS_LIST"
+    if !  certbot renew
     then
       echo "DNS Auth Failed" 
       exit
