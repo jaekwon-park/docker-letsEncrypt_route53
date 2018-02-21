@@ -31,11 +31,18 @@ file_env 'EMAIL'
 
 
 while (true); do
-  rm -rf /etc/letsencrypt/archive/*
-  if !  certbot certonly -n --agree-tos --email "$EMAIL" --dns-route53 --expand -d "$DNS_LIST"
-  then
-    echo "DNS Auth Failed" 
-    exit
+  if [ $(ls /etc/letsencrypt/archive/ | wc -l) -eq 0 ]; then
+    if !  certbot certonly -n --agree-tos --email "$EMAIL" --dns-route53 --expand -d "$DNS_LIST"
+    then
+      echo "DNS Auth Failed" 
+      exit
+    fi
+  else
+    if !  certbot renew -n --agree-tos --email "$EMAIL" --dns-route53 --expand -d "$DNS_LIST"
+    then
+      echo "DNS Auth Failed" 
+      exit
+    fi
   fi
   echo "DNS Auth Success"
   echo "i will Sleep two month"
