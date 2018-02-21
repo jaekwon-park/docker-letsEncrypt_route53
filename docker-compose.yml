@@ -1,0 +1,13 @@
+version: '2'
+services:
+  ssldeploy:
+    image: jkpark/docker-letsencrypt_route53
+    restart: always
+    network_mode: bridge
+    volumes:
+      - ./data/ssl:/etc/letsencrypt/archive
+    environment:
+      - AWS_ACCESS_KEY=accesskey
+      - AWS_SECRET_KEY=secretkey
+      - EMAIL=email
+      - DNS_LIST=dns list
