@@ -32,7 +32,7 @@ file_env 'EMAIL'
 
 while (true); do
   if [ $(ls /etc/letsencrypt/archive/ | wc -l) -eq 0 ]; then
-    if !  certbot certonly -n --agree-tos --email "$EMAIL" --dns-route53 --expand -d "$DNS_LIST"
+    if !  certbot certonly -n --agree-tos --email "$EMAIL" --dns-route53 --server https://acme-v02.api.letsencrypt.org/directory --expand -d "$DNS_LIST"
     then
       echo "DNS Auth Failed" 
       exit
