@@ -32,7 +32,7 @@ file_env 'EMAIL'
 
 while (true); do
   if [ $(ls /etc/letsencrypt/archive/ | wc -l) -eq 0 ]; then
-    if !  certbot certonly -n --agree-tos --email "$EMAIL" --dns-route53 --server https://acme-v02.api.letsencrypt.org/directory --expand -d "$DNS_LIST"
+    if !  certbot certonly -n --agree-tos --email "$EMAIL" --dns-route53 --server https://acme-v02.api.letsencrypt.org/directory --expand -d "$DNS_LIST" 
     then
       echo "$(date "+%F %H:%M") DNS Auth Failed" 
       exit
@@ -45,6 +45,21 @@ while (true); do
     fi
   fi
   echo "$(date "+%F %H:%M") DNS Auth Success"
+  echo "$(date "+%F %H:%M") i will Sleep two month"
+  certification_path=$(echo /etc/letsencrypt/archive/"$(ls /etc/letsencrypt/archive | grep -v default)"/*)
+  if [ ! -d /etc/letsencrypt/archive/default ]; then
+  	echo "$(date "+%F %H:%M") create default directory"
+  	mkdir /etc/letsencrypt/archive/default 
+  fi
+  echo "$(date "+%F %H:%M") copy certification file to /etc/letsencrypt/archive/default directory"
+  if !  cp -rfp $certification_path /etc/letsencrypt/archive/default/
+  then
+      echo "$(date "+%F %H:%M") Certification copy failed" 
+      exit
+  else
+      echo "$(date "+%F %H:%M") copied file list" 
+      ls -alhd /etc/letsencrypt/archive/default/*
+  fi
   echo "$(date "+%F %H:%M") i will Sleep two month"
   #pause to 2 month
   sleep 5184000
