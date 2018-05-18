@@ -6,6 +6,7 @@ services:
     network_mode: bridge
     volumes:
       - ./data/ssl:/etc/letsencrypt/archive
+      - /etc/localtime:/etc/localtime:ro
     environment:
       - AWS_ACCESS_KEY=accesskey
       - AWS_SECRET_KEY=secretkey

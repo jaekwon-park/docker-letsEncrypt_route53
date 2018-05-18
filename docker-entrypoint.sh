@@ -34,18 +34,18 @@ while (true); do
   if [ $(ls /etc/letsencrypt/archive/ | wc -l) -eq 0 ]; then
     if !  certbot certonly -n --agree-tos --email "$EMAIL" --dns-route53 --server https://acme-v02.api.letsencrypt.org/directory --expand -d "$DNS_LIST"
     then
-      echo "DNS Auth Failed" 
+      echo "$(date "+%F %H:%M") DNS Auth Failed" 
       exit
     fi
   else
     if !  certbot renew
     then
-      echo "DNS Auth Failed" 
+      echo "$(date "+%F %H:%M") DNS Auth Failed" 
       exit
     fi
   fi
-  echo "DNS Auth Success"
-  echo "i will Sleep two month"
+  echo "$(date "+%F %H:%M") DNS Auth Success"
+  echo "$(date "+%F %H:%M") i will Sleep two month"
   #pause to 2 month
   sleep 5184000
 done
