@@ -31,6 +31,8 @@ file_env 'EMAIL'
 
 
 while (true); do
+  certification_path=$(echo /etc/letsencrypt/archive/"$(ls /etc/letsencrypt/archive | grep -v default)"/*)
+
   if [ $(ls /etc/letsencrypt/archive/ | wc -l) -eq 0 ]; then
     if !  certbot certonly -n --agree-tos --email "$EMAIL" --dns-route53 --server https://acme-v02.api.letsencrypt.org/directory --expand -d "$DNS_LIST" 
     then
@@ -38,15 +40,16 @@ while (true); do
       exit
     fi
   else
+    echo "$(date "+%F %H:%M") Remove Old cetificate files"
+    rm -rf $certification_path
     if !  certbot renew
     then
       echo "$(date "+%F %H:%M") DNS Auth Failed" 
       exit
     fi
+    echo "$(date "+%F %H:%M") Renew certificate Files Done."
   fi
   echo "$(date "+%F %H:%M") DNS Auth Success"
-  echo "$(date "+%F %H:%M") i will Sleep two month"
-  certification_path=$(echo /etc/letsencrypt/archive/"$(ls /etc/letsencrypt/archive | grep -v default)"/*)
   if [ ! -d /etc/letsencrypt/archive/default ]; then
   	echo "$(date "+%F %H:%M") create default directory"
   	mkdir /etc/letsencrypt/archive/default 
