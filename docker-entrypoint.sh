@@ -18,6 +18,10 @@ function file_env() {
   unset "$fileVar"
 }
 
+function copied_file() {
+  ls -alhd /etc/letsencrypt/archive/default/*
+}
+
 file_env 'AWS_ACCESS_KEY'
 file_env 'AWS_SECRET_KEY'
 
@@ -39,30 +43,49 @@ while (true); do
       echo "$(date "+%F %H:%M") DNS Auth Failed" 
       exit
     fi
+    echo "$(date "+%F %H:%M") DNS Auth Success"
+  
+    if [ ! -d /etc/letsencrypt/archive/default ]; then
+  	  echo "$(date "+%F %H:%M") create default directory"
+  	  mkdir /etc/letsencrypt/archive/default 
+    fi
+  
+    echo "$(date "+%F %H:%M") copy certification file to /etc/letsencrypt/archive/default directory"
+    if !  cp -rfp $certification_path /etc/letsencrypt/archive/default/
+    then
+        echo "$(date "+%F %H:%M") Certification copy failed" 
+        exit
+    else
+        echo "$(date "+%F %H:%M") copied file list" 
+        copied_file
+    fi
+
   else
-    echo "$(date "+%F %H:%M") Remove Old cetificate files"
-    rm -rf $certification_path
     if !  certbot renew
     then
       echo "$(date "+%F %H:%M") DNS Auth Failed" 
       exit
     fi
-    echo "$(date "+%F %H:%M") Renew certificate Files Done."
-  fi
-  echo "$(date "+%F %H:%M") DNS Auth Success"
-  if [ ! -d /etc/letsencrypt/archive/default ]; then
-  	echo "$(date "+%F %H:%M") create default directory"
-  	mkdir /etc/letsencrypt/archive/default 
-  fi
-  echo "$(date "+%F %H:%M") copy certification file to /etc/letsencrypt/archive/default directory"
-  if !  cp -rfp $certification_path /etc/letsencrypt/archive/default/
-  then
-      echo "$(date "+%F %H:%M") Certification copy failed" 
-      exit
-  else
+  
+    if [ -f /etc/letsencrypt/archive/"$(ls /etc/letsencrypt/archive | grep -v default)"/cert2.pem ]; then
+      # copy to default file
+      cp -rfp /etc/letsencrypt/archive/"$(ls /etc/letsencrypt/archive | grep -v default)"/cert2.pem /etc/letsencrypt/archive/default/cert1.pem
+      cp -rfp /etc/letsencrypt/archive/"$(ls /etc/letsencrypt/archive | grep -v default)"/chain2.pem /etc/letsencrypt/archive/default/chain1.pem
+      cp -rfp /etc/letsencrypt/archive/"$(ls /etc/letsencrypt/archive | grep -v default)"/fullchain2.pem /etc/letsencrypt/archive/default/fullchain1.pem
+      cp -rfp /etc/letsencrypt/archive/"$(ls /etc/letsencrypt/archive | grep -v default)"/privkey2.pem /etc/letsencrypt/archive/default/privkey1.pem
+      # move to new SSL to old SSL file name
+      echo "$(date "+%F %H:%M") Remove Old cetificate files"
+      mv -f /etc/letsencrypt/archive/"$(ls /etc/letsencrypt/archive | grep -v default)"/cert2.pem /etc/letsencrypt/archive/"$(ls /etc/letsencrypt/archive | grep -v default)"/cert1.pem
+      mv -f /etc/letsencrypt/archive/"$(ls /etc/letsencrypt/archive | grep -v default)"/chain2.pem /etc/letsencrypt/archive/"$(ls /etc/letsencrypt/archive | grep -v default)"/chain1.pem
+      mv -f /etc/letsencrypt/archive/"$(ls /etc/letsencrypt/archive | grep -v default)"/fullchain2.pem /etc/letsencrypt/archive/"$(ls /etc/letsencrypt/archive | grep -v default)"/fullchain1.pem
+      mv -f /etc/letsencrypt/archive/"$(ls /etc/letsencrypt/archive | grep -v default)"/privkey2.pem /etc/letsencrypt/archive/"$(ls /etc/letsencrypt/archive | grep -v default)"/privkey1.pem
       echo "$(date "+%F %H:%M") copied file list" 
-      ls -alhd /etc/letsencrypt/archive/default/*
+      copied_file
+    fi   
+    echo "$(date "+%F %H:%M") Renew certificate Files Done."
+    exit
   fi
+
   echo "$(date "+%F %H:%M") i will Sleep two month"
   #pause to 2 month
   sleep 5184000
